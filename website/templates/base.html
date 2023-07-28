@@ -17,8 +17,8 @@
 
     <title>{% block title %}Home{% endblock %}</title>
   </head>
-  <body style="background-color: darksalmon;">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <body style="background-color: beige;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <button
         class="navbar-toggler"
         type="button"
@@ -34,7 +34,7 @@
           <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
           {% else %}
           <a class="nav-item nav-link" id="login" href="/login">Login</a>
-          <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
+          <a class="nav-item nav-link" id="signUp" href="/signUp">Sign Up</a>
           {% endif %}
         </div>
       </div>
@@ -77,10 +77,10 @@
 
 {% block javascript %}
     <script type="text/javascript">
-      function deleteNote(noteId) {
-  fetch("/delete-note", {
+      function deleteNote(id) {
+  fetch("/deleteNote", {
     method: "POST",
-    body: JSON.stringify({ noteId: noteId }),
+    body: JSON.stringify({ id: id }),
   }).then((_res) => {
     window.location.href = "/";
   });

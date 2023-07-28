@@ -1,41 +1,34 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from os import path
-from flask_login import LoginManager
+from flask import Flask #Flask imported
+from flask_sqlalchemy import SQLAlchemy #SQLAlchemy imported
+from os import path #for handling paths and directories
+from flask_login import LoginManager    #handling authorizations
 
-dataBase = SQLAlchemy()
-DB_NAME = "database.db"
+DATABASE_NAME = "database.db" #database file's name/ address
+appDataBase = SQLAlchemy() #SQLAlchemy is used for database
 
+def makeApp():  #the web app
+    from .views import views #views blueprint is imported from views.py (different views of the site)
+    from .auth import authBP  #auth blueprint is imported from auth.py (authorization process)
+    from .models import User, Note  #User and Notes clases imported from models
 
-def create_app():
-    webApp = Flask(__name__)
-    webApp.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
-    webApp.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-    dataBase.init_app(webApp)
+    webApp = Flask(__name__)   # An instance of Flask created and assigned to app variable
+    webApp.config['SECRET_KEY'] = 'abc09ghi'   # Secret key for cryptographic purposes
+    webApp.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DATABASE_NAME}' #dataBase URI set using f-string
+    appDataBase.init_app(webApp)   #SQLAlchemy initialized
+    webApp.register_blueprint(views, url_prefix='/')   #blueprints imported from views
+    webApp.register_blueprint(authBP, url_prefix='/')    #blueprints imported from auth
+    with webApp.app_context(): #An application context is created
+        appDataBase.create_all()    #database tables created
 
-    from .views import views
-    from .auth import auth
+    loginController = LoginManager()  #login manager set up
+    loginController.login_view = 'auth.login' #auth.login set as the view
+    loginController.init_app(webApp) #Flask login initialized
+    @loginController.user_loader  #loading user based on ID
+    def load_user(id):  #user loader function
+        return User.query.get(int(id))  #loading user from database based on the ID
 
-    webApp.register_blueprint(views, url_prefix='/')
-    webApp.register_blueprint(auth, url_prefix='/')
+    return webApp  #returns flask app instance
 
-    from .models import User, Note
-    
-    with webApp.app_context():
-        dataBase.create_all()
-
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(webApp)
-
-    @login_manager.user_loader
-    def load_user(id):
-        return User.query.get(int(id))
-
-    return webApp
-
-
-def create_database(app):
-    if not path.exists('website/' + DB_NAME):
-        dataBase.create_all(app=app)
-        print('Created Database!')
+def create_database(app):   #creates database for the given app, if it does not exist
+    if not path.exists('website/' + DATABASE_NAME): # checks to see if database path does not exist
+        appDataBase.create_all(app=app) #database created

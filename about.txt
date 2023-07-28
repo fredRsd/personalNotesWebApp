@@ -1,0 +1,20 @@
+The login website has a website module and a main.py that runs it.
+
+main.py:
+In the main.py, makeApp is imported from website module, and the makeApp() function, which runs
+flask object is assigned to the app variable. In this project, the flask object is our web app.
+
+The if statement, checks to see if this module is run as main script, rather than being imported.
+if the conditions is met app is run and flask development server starts. debug mode is set
+
+website module
+When main.py is run and imports makeApp from website module, it automatically looks for __init__.py,
+which is a special file that marks a python package.
+
+__init__.py
+The Flask, and SQLAlchemy modules are imported. the path module, for working with paths and
+directories, from os and LoginMananager module from flask_login are imported. LoginManager has
+methods and decorators for handling authorization
+
+Then an instance of SQLAlchemy is assigned to appDataBase. the data base file is stored locally, and its name is assigned to DATABASE_NAME variable
+
